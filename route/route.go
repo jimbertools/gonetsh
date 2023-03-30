@@ -74,25 +74,33 @@ func (runner *runner) DeleteRoute(dst string, mask string) error {
 		if err != nil {
 			strErr = err.Error()
 		}
-		return fmt.Errorf("failed to add route on, error: %v. cmd: %v. stdout: %v", strErr, cmd, string(stdout))
+		return fmt.Errorf("failed to delete route on, error: %v. cmd: %v. stdout: %v", strErr, cmd, string(stdout))
 	}
 	return nil
 }
 
 // delete multiple routes
 func (runner *runner) DeleteRoutes(routes []DeleteRouteData) error {
+	errLine := ""
 	for _, route := range routes {
 		if err := runner.DeleteRoute(route.Dst, route.Mask); err != nil {
-			return err
+			errLine += err.Error() + ";"
 		}
+	}
+	if errLine != "" {
+		return fmt.Errorf("some routes could not be deleted, errors: %v", errLine)
 	}
 	return nil
 }
 
 func (runner *runner) AddRoutes(routes []RouteData) error {
+	errLine := ""
 	for _, route := range routes {
 		if err := runner.AddRoute(route.Dst, route.Mask, route.Gateway); err != nil {
-			return err
+			errLine += err.Error() + ";"
+		}
+		if errLine != "" {
+			return fmt.Errorf("some routes could not be added, errors: %v", errLine)
 		}
 	}
 	return nil
