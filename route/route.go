@@ -100,9 +100,9 @@ func (runner *runner) AddRoutes(routes []RouteData) error {
 		if err := runner.AddRoute(route.Dst, route.Mask, route.Gateway); err != nil {
 			errLine += err.Error() + ";"
 		}
-		if errLine != "" {
-			return fmt.Errorf("some routes could not be added, errors: %v", errLine)
-		}
+	}
+	if errLine != "" {
+		return fmt.Errorf("some routes could not be added, errors: %v", errLine)
 	}
 	return nil
 }
