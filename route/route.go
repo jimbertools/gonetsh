@@ -2,7 +2,6 @@ package route
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	utilexec "k8s.io/utils/exec"
@@ -53,7 +52,7 @@ func (runner *runner) AddRoute(dst string, mask string, gateway string) error {
 	}
 	cmd := strings.Join(args, " ")
 	stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput()
-	log.Println("adding route ", cmd)
+	fmt.Print("adding route ", cmd)
 	if err != nil || !strings.Contains(string(stdout), "OK!") {
 		strErr := ""
 		if err != nil {
