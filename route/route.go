@@ -51,8 +51,13 @@ func (runner *runner) AddRoute(dst string, mask string, gateway string) error {
 		"ADD", dst, "MASK", mask, gateway,
 	}
 	cmd := strings.Join(args, " ")
-	if stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput(); err != nil {
-		return fmt.Errorf("failed to add route on, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput()
+	if err != nil || !strings.Contains(string(stdout), "OK!") {
+		strErr := ""
+		if err != nil {
+			strErr = err.Error()
+		}
+		return fmt.Errorf("failed to add route on, error: %v. cmd: %v. stdout: %v", strErr, cmd, string(stdout))
 	}
 	return nil
 }
@@ -63,8 +68,13 @@ func (runner *runner) DeleteRoute(dst string, mask string) error {
 		"DELETE", dst, "MASK", mask,
 	}
 	cmd := strings.Join(args, " ")
-	if stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput(); err != nil {
-		return fmt.Errorf("failed to add route on, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput()
+	if err != nil || !strings.Contains(string(stdout), "OK!") {
+		strErr := ""
+		if err != nil {
+			strErr = err.Error()
+		}
+		return fmt.Errorf("failed to add route on, error: %v. cmd: %v. stdout: %v", strErr, cmd, string(stdout))
 	}
 	return nil
 }
