@@ -2,7 +2,6 @@ package route
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	utilexec "k8s.io/utils/exec"
@@ -49,7 +48,7 @@ type DeleteRouteData struct {
 // add static route
 func (runner *runner) AddRoute(dst string, mask string, gateway string) error {
 	args := []string{
-		"ADD", strconv.Quote(dst), "MASK", strconv.Quote(mask), strconv.Quote(gateway),
+		"ADD", dst, "MASK", mask, gateway,
 	}
 	cmd := strings.Join(args, " ")
 	if stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput(); err != nil {
@@ -61,7 +60,7 @@ func (runner *runner) AddRoute(dst string, mask string, gateway string) error {
 // add static route
 func (runner *runner) DeleteRoute(dst string, mask string) error {
 	args := []string{
-		"DELETE", strconv.Quote(dst), "MASK", strconv.Quote(mask),
+		"DELETE", dst, "MASK", mask,
 	}
 	cmd := strings.Join(args, " ")
 	if stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput(); err != nil {
