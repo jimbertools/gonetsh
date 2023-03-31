@@ -52,7 +52,7 @@ func (runner *runner) AddRoute(dst string, mask string, gateway string) error {
 	}
 	cmd := strings.Join(args, " ")
 	stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput()
-	fmt.Print("adding route ", cmd)
+
 	if err != nil || !strings.Contains(string(stdout), "OK!") {
 		strErr := ""
 		if err != nil {
@@ -100,9 +100,9 @@ func (runner *runner) AddRoutes(routes []RouteData) error {
 		if err := runner.AddRoute(route.Dst, route.Mask, route.Gateway); err != nil {
 			errLine += err.Error() + ";"
 		}
-	}
-	if errLine != "" {
-		return fmt.Errorf("some routes could not be added, errors: %v", errLine)
+		if errLine != "" {
+			return fmt.Errorf("some routes could not be added, errors: %v", errLine)
+		}
 	}
 	return nil
 }
