@@ -65,6 +65,7 @@ type Interface interface {
 	// TODO expand with more features, currently only block or allow all traffic on an interface and set direction
 	AddFwRule(name string, iface string, action string, direction string) error
 	RemoveFwRule(name string) error
+	RemoveFwRulesStartingWith(name string) error
 }
 
 const (
@@ -305,6 +306,35 @@ func (runner *runner) RemoveFwRule(name string) error {
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
 		return fmt.Errorf("failed to remove fw rule, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
 	}
+	return nil
+}
+
+func (runner *runner) RemoveFwRulesStartingWith(name string) error {
+	args := []string{
+		"advfirewall", "firewall", "show", "rule", "name=all",
+	}
+
+	cmd := strings.Join(args, " ")
+
+	stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput()
+
+	if err != nil {
+		return fmt.Errorf("failed to remove fw rule, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+
+	lines := strings.Split(string(stdout), "\n")
+
+	for _, line := range lines {
+		if strings.HasPrefix(line, "Rule Name:") {
+			fwRule := strings.TrimSpace(strings.TrimPrefix(line, "Rule Name:"))
+			if strings.HasPrefix(fwRule, name) {
+				if err := runner.RemoveFwRule(fwRule); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
