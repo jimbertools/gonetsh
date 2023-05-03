@@ -441,7 +441,7 @@ func (runner *runner) GetInterfaceByIP(ipAddr string) (Ipv4Interface, error) {
 // set interface ip address using netsh
 func (runner *runner) SetInterfaceIP(iface string, ip string, mask string) error {
 	args := []string{
-		"int", "ipv4", "set", "address", strconv.Quote(iface), "static", strconv.Quote(ip), strconv.Quote(mask),
+		"int", "ipv4", "set", "address", iface, "static", strconv.Quote(ip), strconv.Quote(mask),
 	}
 	cmd := strings.Join(args, " ")
 	log.Print("EXECUTING SetInterfaceIP: ", cmd)
@@ -454,7 +454,7 @@ func (runner *runner) SetInterfaceIP(iface string, ip string, mask string) error
 
 func (runner *runner) SetDNSServer(iface string, dns string) error {
 	args := []string{
-		"int", "ipv4", "set", "dns", strconv.Quote(iface), "static", strconv.Quote(dns),
+		"int", "ipv4", "set", "dns", iface, "static", dns,
 	}
 	cmd := strings.Join(args, " ")
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
@@ -465,7 +465,7 @@ func (runner *runner) SetDNSServer(iface string, dns string) error {
 }
 func (runner *runner) DeleteDNSServers(iface string) error {
 	args := []string{
-		"interface", "ipv4", "delete", "dnsservers", strconv.Quote(iface), "all",
+		"interface", "ipv4", "delete", "dnsservers", iface, "all",
 	}
 	cmd := strings.Join(args, " ")
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
@@ -476,7 +476,7 @@ func (runner *runner) DeleteDNSServers(iface string) error {
 
 func (runner *runner) SetDHCP(iface string) error {
 	args := []string{
-		"interface", "ipv4", "set", "dnsservers", strconv.Quote(iface), "dhcp",
+		"interface", "ipv4", "set", "dnsservers", iface, "dhcp",
 	}
 	cmd := strings.Join(args, " ")
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
