@@ -267,7 +267,7 @@ func (runner *runner) EnableForwarding(iface string) error {
 // add static route
 func (runner *runner) AddStaticRoute(iface string, cidr string, gateway string) error {
 	args := []string{
-		"int", "ipv4", "add", "route", strconv.Quote(cidr), strconv.Quote(iface), strconv.Quote(gateway),
+		"int", "ipv4", "add", "route", cidr, iface, gateway,
 	}
 	cmd := strings.Join(args, " ")
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
