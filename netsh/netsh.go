@@ -485,6 +485,28 @@ func (runner *runner) SetDHCP(iface string) error {
 	return nil
 }
 
+// reset proxy server
+func (runner *runner) ResetProxyServer() error {
+	arg := []string{
+		"winhttp", "reset", "proxy",
+	}
+	cmd := strings.Join(arg, " ")
+	if stdout, err := runner.exec.Command(cmdNetsh, arg...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to reset proxy server, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+	return nil
+}
+
+func (runner *runner) SetProxyServerIe() error {
+	args := []string{
+		"winhttp", "import", "proxy", "source=ie"}
+	cmd := strings.Join(args, " ")
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to set proxy server, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+	return nil
+}
+
 // Restore is part of Interface.
 func (runner *runner) Restore(args []string) error {
 	return nil
