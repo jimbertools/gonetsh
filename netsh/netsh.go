@@ -60,6 +60,7 @@ type Interface interface {
 	SetDNSServer(iface string, dns string) error
 	DeleteDNSServers(iface string) error
 	SetDHCP(iface string) error
+	SetMTU(iface string, mtu int) error
 	AddStaticRoute(iface string, cidr string, gateway string) error
 	EnableFw() error
 	// TODO expand with more features, currently only block or allow all traffic on an interface and set direction
