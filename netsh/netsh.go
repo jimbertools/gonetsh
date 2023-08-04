@@ -485,6 +485,19 @@ func (runner *runner) SetDHCP(iface string) error {
 	return nil
 }
 
+// set MTU
+func (runner *runner) SetMTU(iface string, mtu int) error {
+	args := []string{
+		"interface", "ipv4", "set", "subinterface", iface, "mtu=" + strconv.Itoa(mtu),
+	}
+	cmd := strings.Join(args, " ")
+	log.Print("EXECUTING SetMTU: ", cmd)
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to set proxy server, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+	return nil
+}
+
 // reset proxy server
 func (runner *runner) ResetProxyServer() error {
 	arg := []string{
