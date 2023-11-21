@@ -67,6 +67,8 @@ type Interface interface {
 	AddFwRule(name string, iface string, action string, direction string) error
 	RemoveFwRule(name string) error
 	RemoveFwRulesStartingWith(name string) error
+	EnableIpv6() error
+	DisableIpv6() error
 }
 
 const (
