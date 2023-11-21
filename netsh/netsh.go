@@ -67,6 +67,7 @@ type Interface interface {
 	AddFwRule(name string, iface string, action string, direction string) error
 	RemoveFwRule(name string) error
 	RemoveFwRulesStartingWith(name string) error
+	DisableIpv6() error
 }
 
 const (
@@ -518,6 +519,58 @@ func (runner *runner) SetProxyServerIe() error {
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
 		return fmt.Errorf("failed to set proxy server, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
 	}
+	return nil
+}
+
+func (runner *runner) DisableIpv6() error {
+	args := []string{
+		"interface", "ipv6", "set", "global", "randomizeidentifiers=disabled", "store=active",
+	}
+	cmd := strings.Join(args, " ")
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to disable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+
+	args = []string{
+		"interface", "ipv6", "set", "privacy", "state=disabled", "store=active",
+	}
+	cmd = strings.Join(args, " ")
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to disable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+
+	args = []string{
+		"interface", "ipv6", "set", "global", "address=disabled", "store=active",
+	}
+	cmd = strings.Join(args, " ")
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to disable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+
+	args = []string{
+		"interface", "ipv6", "set", "teredo", "disable", "store=active",
+	}
+	cmd = strings.Join(args, " ")
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to disable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+
+	args = []string{
+		"interface", "ipv6", "isatap", "set", "state", "state=disabled", "store=active",
+	}
+	cmd = strings.Join(args, " ")
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to disable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+
+	args = []string{
+		"interface", "ipv6", "6to4", "set", "state", "state=disabled", "store=active",
+	}
+	cmd = strings.Join(args, " ")
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to disable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+
 	return nil
 }
 
