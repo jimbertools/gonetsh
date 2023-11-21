@@ -548,35 +548,28 @@ func (runner *runner) DisableIpv6() error {
 		return fmt.Errorf("failed to disable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
 	}
 
-	return nil
-}
-
-func (runner *runner) EnableIpv6() error {
-	// Enable randomizing identifiers
-	args := []string{
-		"interface", "ipv6", "set", "global", "randomizeidentifiers=enabled", "store=active",
-	}
-	cmd := strings.Join(args, " ")
-	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
-		return fmt.Errorf("failed to enable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
-	}
-
-	// Enable privacy
 	args = []string{
-		"interface", "ipv6", "set", "privacy", "state=enabled", "store=active",
+		"interface", "ipv6", "set", "teredo", "disable", "store=active",
 	}
 	cmd = strings.Join(args, " ")
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
-		return fmt.Errorf("failed to enable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+		return fmt.Errorf("failed to disable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
 	}
 
-	// Enable global addresses
 	args = []string{
-		"interface", "ipv6", "set", "global", "address=enabled", "store=active",
+		"interface", "ipv6", "isatap", "set", "state", "state=disabled", "store=active",
 	}
 	cmd = strings.Join(args, " ")
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
-		return fmt.Errorf("failed to enable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+		return fmt.Errorf("failed to disable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
+	}
+
+	args = []string{
+		"interface", "ipv6", "6to4", "set", "state", "state=disabled", "store=active",
+	}
+	cmd = strings.Join(args, " ")
+	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to disable ipv6, error: %v. cmd: %v. stdout: %v", err.Error(), cmd, string(stdout))
 	}
 
 	return nil
