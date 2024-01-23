@@ -36,7 +36,7 @@ func New(exec utilexec.Interface) Interface {
 func (runner *runner) GetPhysicalInterfaceNames() ([]string, error) {
 	// wmic nic where "PhysicalAdapter='TRUE' and PNPDeviceID like '%PCI%'" get NetConnectionID
 	args := []string{
-		"nic", "where", "PhysicalAdapter='TRUE' and NetConnectionStatus=2 and PNPDeviceID like '%PCI%'", "get", "NetConnectionID",
+		"nic", "where", "(PhysicalAdapter='TRUE' and NetConnectionStatus=2) and (PNPDeviceID like '%VMBus%' or PNPDeviceID like '%PCI%')", "get", "NetConnectionID",
 	}
 	cmd := strings.Join(args, " ")
 	stdout, err := runner.exec.Command(cmdWmic, args...).CombinedOutput()
