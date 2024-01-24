@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"syscall"
 
 	"errors"
 
@@ -20,6 +21,7 @@ func ExecuteNetsh(netshcmd string, cmd string) {
 	if _pipe == nil {
 		executablePath := "netsh"
 		_cmd := exec.Command(executablePath)
+		_cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 		var err error
 		_pipe, err = _cmd.StdinPipe()
 		//pipeout, err := _cmd.StdoutPipe()
