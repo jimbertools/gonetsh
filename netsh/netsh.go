@@ -475,7 +475,7 @@ func (runner *runner) SetMetricByInterfaceName(iface string, metric int) error {
 	}
 	cmd := strings.Join(args, " ")
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
-		return fmt.Errorf("failed to set dns on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
+		return fmt.Errorf("failed to set metric on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
 	}
 
 	return nil
