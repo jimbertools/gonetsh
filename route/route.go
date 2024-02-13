@@ -69,6 +69,7 @@ func (runner *runner) DeleteRoute(dst string, mask string) error {
 		"DELETE", dst, "MASK", mask,
 	}
 	cmd := strings.Join(args, " ")
+	fmt.Println("cmd: ", cmd)
 	stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput()
 	if err != nil || !strings.Contains(string(stdout), "OK!") {
 		strErr := ""
