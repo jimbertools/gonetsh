@@ -11,6 +11,7 @@ type Interface interface {
 	AddRoute(iface string, cidr string, gateway string) error
 	AddRoutes(routes []RouteData) error
 	DeleteRoute(dst string, mask string) error
+	DeleteRouteWithGW(dst string, mask string, gateway string) error
 	DeleteRoutes(routes []DeleteRouteData) error
 }
 
@@ -67,6 +68,22 @@ func (runner *runner) AddRoute(dst string, mask string, gateway string) error {
 func (runner *runner) DeleteRoute(dst string, mask string) error {
 	args := []string{
 		"DELETE", dst, "MASK", mask,
+	}
+	cmd := strings.Join(args, " ")
+	stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput()
+	if err != nil || !strings.Contains(string(stdout), "OK!") {
+		strErr := ""
+		if err != nil {
+			strErr = err.Error()
+		}
+		return fmt.Errorf("failed to delete route on, error: %v. cmd: %v. stdout: %v", strErr, cmd, string(stdout))
+	}
+	return nil
+}
+
+func (runner *runner) DeleteRouteWithGW(dst string, mask string, gateway string) error {
+	args := []string{
+		"DELETE", dst, "MASK", mask, gateway,
 	}
 	cmd := strings.Join(args, " ")
 	stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput()
