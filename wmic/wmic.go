@@ -34,7 +34,7 @@ func New(exec utilexec.Interface) Interface {
 
 // add static route
 func (runner *runner) GetPhysicalInterfaceNames() ([]string, error) {
-	// wmic nic where "PhysicalAdapter='TRUE' and PNPDeviceID like '%PCI%'" get NetConnectionID
+	// wmic nic where (PhysicalAdapter='TRUE' and NetConnectionStatus=2) and (PNPDeviceID like '%VMBus%' or '%PCI%'") get NetConnectionID
 	args := []string{
 		"nic", "where", "(PhysicalAdapter='TRUE' and NetConnectionStatus=2) and (PNPDeviceID like '%VMBus%' or PNPDeviceID like '%PCI%')", "get", "NetConnectionID",
 	}
