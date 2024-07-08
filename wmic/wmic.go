@@ -39,7 +39,7 @@ func (runner *runner) GetPhysicalInterfaceNames() ([]string, error) {
 	// Easy to debug
 	// wmic nic where "(PhysicalAdapter='TRUE' and NetConnectionStatus=2)" get PhysicalAdapter,NetConnectionStatus,PNPDeviceID,ProductName
 	args := []string{
-		"nic", "where", "(PhysicalAdapter='TRUE' and NetConnectionStatus=2) and (PNPDeviceID like '%VMBus%' or PNPDeviceID like '%PCI%')", "get", "NetConnectionID",
+		"nic", "where", "(PhysicalAdapter='TRUE' and NetConnectionStatus=2) and (PNPDeviceID like '%VMBus%' or PNPDeviceID like '%PCI%' or PNPDeviceID like '%USB%')", "get", "NetConnectionID",
 	}
 	cmd := strings.Join(args, " ")
 	stdout, err := runner.exec.Command(cmdWmic, args...).CombinedOutput()
