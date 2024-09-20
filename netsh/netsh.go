@@ -292,10 +292,20 @@ func (runner *runner) EnableFw() error {
 	return nil
 }
 
-func (runner *runner) AddFwRule(name string, iface string, action string, direction string) error {
+func (runner *runner) AddFwRule(name string, iface string, action string, direction string, ports *string) error {
 	args := []string{
-		"advfirewall", "firewall", "add", "rule", "name=" + strconv.Quote(name), "dir=" + strconv.Quote(direction), "localip=" + strconv.Quote(iface), "action=" + strconv.Quote(action),
+		"advfirewall", "firewall", "add", "rule",
+		"name=" + strconv.Quote(name),
+		"dir=" + strconv.Quote(direction),
+		"localip=" + strconv.Quote(iface),
+		"action=" + strconv.Quote(action),
+		"protocol=TCP", // Adjust protocol as needed
 	}
+
+	if ports != nil {
+		args = append(args, "localport="+strconv.Quote(*ports))
+	}
+
 	cmd := strings.Join(args, " ")
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
 		return fmt.Errorf("failed to add fw rule on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
