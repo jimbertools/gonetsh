@@ -67,7 +67,7 @@ type Interface interface {
 	AddStaticRoute(iface string, cidr string, gateway string) error
 	EnableFw() error
 	// TODO expand with more features, currently only block or allow all traffic on an interface and set direction
-	AddFwRule(name string, iface string, action string, direction string) error
+	AddFwRule(name string, iface string, action string, direction string, ports *string) error
 	RemoveFwRule(name string) error
 	RemoveFwRulesStartingWith(name string) error
 	DisableIpv6() error
