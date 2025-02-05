@@ -8,7 +8,7 @@ import (
 )
 
 type Interface interface {
-	AddRoute(iface string, cidr string, gateway string) error
+	AddRoute(iface int, dst string, mask string, gateway string) error
 	AddRoutes(routes []RouteData) error
 	DeleteRoute(dst string, mask string) error
 	DeleteRouteWithGW(dst string, mask string, gateway string) error
@@ -40,6 +40,7 @@ type RouteData struct {
 	Dst     string
 	Mask    string
 	Gateway string
+	Iface   int
 }
 type DeleteRouteData struct {
 	Dst  string
@@ -47,9 +48,9 @@ type DeleteRouteData struct {
 }
 
 // add static route
-func (runner *runner) AddRoute(dst string, mask string, gateway string) error {
+func (runner *runner) AddRoute(iface int, dst string, mask string, gateway string) error {
 	args := []string{
-		"ADD", dst, "MASK", mask, gateway,
+		"ADD", dst, "MASK", mask, gateway, "IF", fmt.Sprintf("%d", iface),
 	}
 	cmd := strings.Join(args, " ")
 	stdout, err := runner.exec.Command(cmdRouting, args...).CombinedOutput()
@@ -114,7 +115,7 @@ func (runner *runner) DeleteRoutes(routes []DeleteRouteData) error {
 func (runner *runner) AddRoutes(routes []RouteData) error {
 	errLine := ""
 	for _, route := range routes {
-		if err := runner.AddRoute(route.Dst, route.Mask, route.Gateway); err != nil {
+		if err := runner.AddRoute(route.Iface, route.Dst, route.Mask, route.Gateway); err != nil {
 			errLine += err.Error() + ";"
 		}
 		if errLine != "" {
