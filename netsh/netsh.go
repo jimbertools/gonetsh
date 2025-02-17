@@ -299,7 +299,6 @@ func (runner *runner) AddFwRule(name string, iface string, action string, direct
 		"dir=" + strconv.Quote(direction),
 		"localip=" + strconv.Quote(iface),
 		"action=" + strconv.Quote(action),
-		"protocol=TCP", // Adjust protocol as needed
 	}
 
 	if ports != nil {
