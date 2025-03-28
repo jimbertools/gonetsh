@@ -67,7 +67,7 @@ type Interface interface {
 	AddStaticRoute(iface string, cidr string, gateway string) error
 	EnableFw() error
 	// TODO expand with more features, currently only block or allow all traffic on an interface and set direction
-	AddFwRule(name string, iface string, action string, direction string, ports *string) error
+	AddFwRule(name string, iface string, action string, direction string, protocol *string, ports *string) error
 	RemoveFwRule(name string) error
 	RemoveFwRulesStartingWith(name string) error
 	DisableIpv6() error
@@ -292,13 +292,17 @@ func (runner *runner) EnableFw() error {
 	return nil
 }
 
-func (runner *runner) AddFwRule(name string, iface string, action string, direction string, ports *string) error {
+func (runner *runner) AddFwRule(name string, iface string, action string, direction string, protocol *string, ports *string) error {
 	args := []string{
 		"advfirewall", "firewall", "add", "rule",
 		"name=" + strconv.Quote(name),
 		"dir=" + strconv.Quote(direction),
 		"localip=" + strconv.Quote(iface),
 		"action=" + strconv.Quote(action),
+	}
+
+	if protocol != nil {
+		args = append(args, "protocol="+strconv.Quote(*protocol))
 	}
 
 	if ports != nil {
@@ -309,6 +313,7 @@ func (runner *runner) AddFwRule(name string, iface string, action string, direct
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
 		return fmt.Errorf("failed to add fw rule on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
 	}
+
 	return nil
 }
 
