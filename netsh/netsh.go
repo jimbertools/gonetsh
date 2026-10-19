@@ -1,6 +1,9 @@
+// Modified by JimberSoftware; synced from the Jimber gonetsh copy.
+
 package netsh
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -9,8 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
-
-	"errors"
 
 	utilexec "k8s.io/utils/exec"
 )
@@ -243,8 +244,18 @@ func (runner *runner) getNetworkInterfaceParameters() (map[string]int, error) {
 
 		line = strings.TrimSpace(line)
 
+		// Skip empty lines or lines that don't match expected format
+		if line == "" {
+			continue
+		}
+
 		// Split the line by two or more whitespace characters, returning all substrings (n < 0)
 		splitLine := reg.Split(line, -1)
+
+		// Skip lines that don't have the expected format (need at least 5 columns)
+		if len(splitLine) < 5 {
+			continue
+		}
 
 		name := splitLine[4]
 		if idx, err := strconv.Atoi(splitLine[0]); err == nil {
@@ -459,11 +470,21 @@ func (runner *runner) GetInterfaceByIP(ipAddr string) (Ipv4Interface, error) {
 
 // set interface ip address using netsh
 func (runner *runner) SetInterfaceIP(iface string, ip string, mask string) error {
+	// Set dadtransmits=0 to disable DAD (Duplicate Address Detection)
+	// This way we can set the IP address without Windows doing useless things.
+	dadArgs := []string{
+		"interface", "ipv4", "set", "interface", iface, "dadtransmits=0",
+	}
+	dadCmd := strings.Join(dadArgs, " ")
+	if stdout, err := runner.exec.Command(cmdNetsh, dadArgs...).CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to set dadtransmits=0 on [%v]: %w. cmd: %v. stdout: %v", iface, err, dadCmd, string(stdout))
+	}
+
+	// Set IP address
 	args := []string{
 		"int", "ipv4", "set", "address", iface, "static", strconv.Quote(ip), strconv.Quote(mask),
 	}
 	cmd := strings.Join(args, " ")
-	log.Print("EXECUTING SetInterfaceIP: ", cmd)
 	if stdout, err := runner.exec.Command(cmdNetsh, args...).CombinedOutput(); err != nil {
 		return fmt.Errorf("failed to set ip on [%v], error: %v. cmd: %v. stdout: %v", iface, err.Error(), cmd, string(stdout))
 	}

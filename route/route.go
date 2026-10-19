@@ -1,3 +1,5 @@
+// Modified by JimberSoftware; synced from the Jimber gonetsh copy.
+
 package route
 
 import (
@@ -50,7 +52,7 @@ type DeleteRouteData struct {
 // add static route
 func (runner *runner) AddRoute(iface string, dst string, mask string, gateway string) error {
 	args := []string{
-		"ADD", dst, "MASK", mask, gateway,
+		"ADD", dst, "MASK", mask, gateway, "METRIC", "20",
 	}
 	if iface != "" {
 		args = append(args, "IF", iface)
